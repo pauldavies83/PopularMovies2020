@@ -2,7 +2,6 @@ package dev.pauldavies.popularmovies2020.movielist
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -18,11 +17,7 @@ import kotlinx.android.synthetic.main.fragment_movie_list.*
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.state.observe(viewLifecycleOwner, Observer { state ->
-            state.colorRes?.let { colorRes ->
-                movieListFragmentContent.setBackgroundColor(
-                    ContextCompat.getColor(requireContext(), colorRes)
-                )
-            }
+            movieTitle.text = state.movieItems.lastOrNull()
         })
     }
 }
