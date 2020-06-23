@@ -1,27 +1,18 @@
 package dev.pauldavies.popularmovies2020.repository
 
 import com.nhaarman.mockitokotlin2.*
+import dev.pauldavies.popularmovies2020.TestCoroutineRule
 import dev.pauldavies.popularmovies2020.api.ApiMovie
 import dev.pauldavies.popularmovies2020.api.ApiMovieResponse
 import dev.pauldavies.popularmovies2020.api.TmdbApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runBlockingTest
-import kotlinx.coroutines.test.setMain
-import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class MovieRepositoryTest {
 
-    private val testDispatcher = TestCoroutineDispatcher()
-
-    @Before fun setup() { Dispatchers.setMain(testDispatcher) }
-    @After fun tearDown() { Dispatchers.resetMain(); testDispatcher.cleanupTestCoroutines() }
+    @get:Rule val testCoroutineRule = TestCoroutineRule()
 
     private val movieTitle = "movieTitle"
     private val successResponse = ApiMovieResponse(listOf(ApiMovie(movieTitle)))
@@ -32,7 +23,8 @@ class MovieRepositoryTest {
 
     private val repository by lazy { MovieRepository(tmdbApi) }
 
-    @Test fun successfulApiCall() = runBlockingTest {
+    @Test
+    fun `successful Api Call`() = testCoroutineRule.runBlockingTest {
         val result = repository.popularMovies()
 
         verify(tmdbApi).getPopularMovies()
@@ -43,7 +35,8 @@ class MovieRepositoryTest {
      * This test just confirms the presence of a thrown exception.
      * Robust error handling from the API should be added later.
      */
-    @Test(expected = Exception::class) fun errorApiCall() = runBlockingTest {
+    @Test(expected = Exception::class)
+    fun `error Api Call`() = testCoroutineRule.runBlockingTest {
         tmdbApi.stub {
             onBlocking { it.getPopularMovies() } doAnswer { throw Exception() }
         }

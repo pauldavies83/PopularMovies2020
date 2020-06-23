@@ -6,17 +6,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import dev.pauldavies.popularmovies2020.repository.MovieRepository
+import kotlinx.coroutines.CoroutineDispatcher
 
 internal class MovieListViewModel @ViewModelInject constructor(
-    private val movieRepository: MovieRepository
+    private val movieRepository: MovieRepository,
+    defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
-    val state: MutableLiveData<State> = MutableLiveData(State())
+    val state: MutableLiveData<State> = MutableLiveData(State.Loading)
 
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(defaultDispatcher) {
             state.postValue(
-                State(
+                State.Loaded(
                     movieItems = movieRepository.popularMovies().map {
                         MovieListItem(it.title, it.title)
                     }
@@ -25,5 +27,8 @@ internal class MovieListViewModel @ViewModelInject constructor(
         }
     }
 
-    data class State(val movieItems: List<MovieListItem> = emptyList())
+    sealed class State {
+        object Loading: State()
+        data class Loaded(val movieItems: List<MovieListItem> = emptyList()): State()
+    }
 }

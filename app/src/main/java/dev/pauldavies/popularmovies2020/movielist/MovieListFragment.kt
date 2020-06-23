@@ -10,7 +10,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import dev.pauldavies.popularmovies2020.R
 import kotlinx.android.synthetic.main.fragment_movie_list.*
 
-@AndroidEntryPoint class MovieListFragment : Fragment(R.layout.fragment_movie_list) {
+@AndroidEntryPoint
+class MovieListFragment : Fragment(R.layout.fragment_movie_list) {
 
     private val viewModel: MovieListViewModel by viewModels()
     private val movieListAdapter = MovieListAdapter()
@@ -24,7 +25,29 @@ import kotlinx.android.synthetic.main.fragment_movie_list.*
         }
 
         viewModel.state.observe(viewLifecycleOwner, Observer { state ->
-            movieListAdapter.submitList(state.movieItems)
+            when (state) {
+                is MovieListViewModel.State.Loading -> {
+                    movieListLoadingProgress.visible()
+                    movieListRecyclerView.gone()
+                }
+                is MovieListViewModel.State.Loaded -> {
+                    movieListLoadingProgress.gone()
+                    movieListRecyclerView.visible()
+                    movieListAdapter.submitList(state.movieItems)
+                }
+            }
         })
     }
+}
+
+fun View.visible() {
+    this.visibility = View.VISIBLE
+}
+
+fun View.invisible() {
+    this.visibility = View.INVISIBLE
+}
+
+fun View.gone() {
+    this.visibility = View.GONE
 }
