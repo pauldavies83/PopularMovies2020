@@ -6,14 +6,18 @@ import androidx.lifecycle.ViewModel
 import dev.pauldavies.popularmovies2020.data.MovieRepository
 
 internal class MovieListViewModel @ViewModelInject constructor(
-    movieRepository: MovieRepository
+    private val movieRepository: MovieRepository
 ) : ViewModel() {
 
     val state: MutableLiveData<State> = MutableLiveData(State())
 
     init {
-        state.postValue(State(movieItems = movieRepository.movies().map { it.title }))
+        state.postValue(
+            State(movieItems = buildItems())
+        )
     }
 
-    data class State(val movieItems: List<String> = emptyList())
+    private fun buildItems() = movieRepository.movies().map { MovieListItem(it.title, it.title) }
+
+    data class State(val movieItems: List<MovieListItem> = emptyList())
 }
