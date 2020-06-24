@@ -5,17 +5,25 @@ import dev.pauldavies.popularmovies2020.TestCoroutineRule
 import dev.pauldavies.popularmovies2020.api.ApiMovie
 import dev.pauldavies.popularmovies2020.api.ApiMovieResponse
 import dev.pauldavies.popularmovies2020.api.TmdbApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
+import java.time.LocalDate
+import kotlin.math.roundToInt
 
 class MovieRepositoryTest {
 
     @get:Rule val testCoroutineRule = TestCoroutineRule()
 
-    private val movieTitle = "movieTitle"
-    private val successResponse = ApiMovieResponse(listOf(ApiMovie(movieTitle)))
+    private val id = "id"
+    private val title = "movieTitle"
+    private val voteAverageDouble = 5.9
+    private val releaseDateString = "2019-01-01"
+    private val releaseDateTime = LocalDate.parse(
+        releaseDateString)
+
+    private val successResponse = ApiMovieResponse(
+        listOf(ApiMovie(id, title, voteAverageDouble, releaseDateString)))
 
     private val tmdbApi = mock<TmdbApi> {
         onBlocking { it.getPopularMovies() } doReturn(successResponse)
@@ -28,7 +36,7 @@ class MovieRepositoryTest {
         val result = repository.popularMovies()
 
         verify(tmdbApi).getPopularMovies()
-        assertEquals(result, listOf(Movie(movieTitle)))
+        assertEquals(listOf(Movie(id, title, (voteAverageDouble * 10).roundToInt(), releaseDateTime)), result)
     }
 
     /**

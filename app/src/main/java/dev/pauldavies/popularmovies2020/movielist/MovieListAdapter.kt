@@ -30,10 +30,21 @@ internal class MovieListAdapter :
 
     class MovieViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         fun bind(movie: MovieListItem) {
-            itemView.movieTitle.text = movie.title
+            itemView.apply {
+                with (movie) {
+                    movieTitle.text = title
+                    movieReleaseDate.text = releaseDate
+                    movieRatingPercentage.text = voteAverage.toString()
+                }
+            }
         }
     }
 
 }
 
-data class MovieListItem(val id: String, val title: String)
+data class MovieListItem(
+    val id: String,
+    val title: String,
+    val voteAverage: Int,
+    val releaseDate: String
+)
