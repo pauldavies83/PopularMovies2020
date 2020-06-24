@@ -45,9 +45,11 @@ class NetworkModule {
             .baseUrl("https://api.themoviedb.org/3/movie/")
             .client(okHttpClient)
             .addConverterFactory(
-                /** enable ignoreUnknownKeys to save having to parse every json key from the API,
-                    this should not be considered production ready **/
-                Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true))
+                /** enable ignoreUnknownKeys to save having to parse every json key from the API &
+                    enable isLenient as inconsistent quote usage in api response,
+                    this should not be considered production ready!
+                 **/
+                Json(JsonConfiguration.Stable.copy(ignoreUnknownKeys = true, isLenient = true))
                     .asConverterFactory("application/json".toMediaType())
             )
             .build()

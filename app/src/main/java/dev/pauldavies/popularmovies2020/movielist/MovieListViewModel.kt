@@ -4,9 +4,12 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dev.pauldavies.popularmovies2020.repository.Movie
 import kotlinx.coroutines.launch
 import dev.pauldavies.popularmovies2020.repository.MovieRepository
 import kotlinx.coroutines.CoroutineDispatcher
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 internal class MovieListViewModel @ViewModelInject constructor(
     private val movieRepository: MovieRepository,
@@ -20,12 +23,21 @@ internal class MovieListViewModel @ViewModelInject constructor(
             state.postValue(
                 State.Loaded(
                     movieItems = movieRepository.popularMovies().map {
-                        MovieListItem(it.title, it.title)
+                        it.toMovieListItem()
                     }
                 )
             )
         }
     }
+
+    private fun Movie.toMovieListItem(): MovieListItem = MovieListItem(
+        id = id,
+        title = title,
+        voteAverage = voteAverage,
+        releaseDate = releaseDate.format(
+            DateTimeFormatter.ofPattern("dd-MMM-yyyy", Locale.ENGLISH)
+        )
+    )
 
     sealed class State {
         object Loading: State()

@@ -13,4 +13,9 @@ interface TmdbApi {
 data class ApiMovieResponse(val results: List<ApiMovie>)
 
 @Serializable
-data class ApiMovie(val title: String)
+data class ApiMovie(
+    val id: String,
+    val title: String,
+    val vote_average: Double,
+    val release_date: String
+)
