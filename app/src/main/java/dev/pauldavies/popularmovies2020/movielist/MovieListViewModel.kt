@@ -33,6 +33,7 @@ internal class MovieListViewModel @ViewModelInject constructor(
     private fun Movie.toMovieListItem(): MovieListItem = MovieListItem(
         id = id,
         title = title,
+        posterPath = posterPath,
         voteAverage = voteAverage,
         releaseDate = releaseDate.format(
             DateTimeFormatter.ofPattern("dd-MMM-yyyy", Locale.ENGLISH)

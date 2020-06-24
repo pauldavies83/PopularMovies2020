@@ -13,20 +13,24 @@ import kotlin.math.roundToInt
 
 class MovieRepositoryTest {
 
-    @get:Rule val testCoroutineRule = TestCoroutineRule()
+    @get:Rule
+    val testCoroutineRule = TestCoroutineRule()
 
     private val id = "id"
     private val title = "movieTitle"
+    private val posterPath = "/urlto.jpg"
     private val voteAverageDouble = 5.9
     private val releaseDateString = "2019-01-01"
     private val releaseDateTime = LocalDate.parse(
-        releaseDateString)
+        releaseDateString
+    )
 
     private val successResponse = ApiMovieResponse(
-        listOf(ApiMovie(id, title, voteAverageDouble, releaseDateString)))
+        listOf(ApiMovie(id, title, posterPath, voteAverageDouble, releaseDateString))
+    )
 
     private val tmdbApi = mock<TmdbApi> {
-        onBlocking { it.getPopularMovies() } doReturn(successResponse)
+        onBlocking { it.getPopularMovies() } doReturn (successResponse)
     }
 
     private val repository by lazy { MovieRepository(tmdbApi) }
@@ -36,7 +40,18 @@ class MovieRepositoryTest {
         val result = repository.popularMovies()
 
         verify(tmdbApi).getPopularMovies()
-        assertEquals(listOf(Movie(id, title, (voteAverageDouble * 10).roundToInt(), releaseDateTime)), result)
+        assertEquals(
+            listOf(
+                Movie(
+                    id = id,
+                    title = title,
+                    posterPath = posterPath,
+                    voteAverage = (voteAverageDouble * 10).roundToInt(),
+                    releaseDate = releaseDateTime
+                )
+            ),
+            result
+        )
     }
 
     /**

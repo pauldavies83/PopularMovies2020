@@ -21,6 +21,7 @@ private fun ApiMovie.toMovie(): Movie {
     return Movie(
         id = id,
         title = title,
+        posterPath = poster_path,
         voteAverage = (vote_average * 10).roundToInt(),
         releaseDate =  LocalDate.parse(release_date)
     )
@@ -29,6 +30,7 @@ private fun ApiMovie.toMovie(): Movie {
 data class Movie(
     val id: String,
     val title: String,
+    val posterPath: String,
     val voteAverage: Int,
     val releaseDate: LocalDate
 )
