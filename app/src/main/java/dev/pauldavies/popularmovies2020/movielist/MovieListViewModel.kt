@@ -1,5 +1,6 @@
 package dev.pauldavies.popularmovies2020.movielist
 
+import androidx.annotation.VisibleForTesting
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,6 +11,10 @@ import dev.pauldavies.popularmovies2020.repository.MovieRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import java.time.format.DateTimeFormatter
 import java.util.*
+
+@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+internal val DATE_FORMAT_SHORT_MONTH_SPACE_SEPARATOR =
+    DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.ENGLISH)
 
 internal class MovieListViewModel @ViewModelInject constructor(
     private val movieRepository: MovieRepository,
@@ -35,9 +40,7 @@ internal class MovieListViewModel @ViewModelInject constructor(
         title = title,
         posterPath = posterPath,
         voteAverage = voteAverage,
-        releaseDate = releaseDate.format(
-            DateTimeFormatter.ofPattern("dd-MMM-yyyy", Locale.ENGLISH)
-        )
+        releaseDate = releaseDate.format(DATE_FORMAT_SHORT_MONTH_SPACE_SEPARATOR)
     )
 
     sealed class State {

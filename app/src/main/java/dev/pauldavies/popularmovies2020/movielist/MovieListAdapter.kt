@@ -39,11 +39,19 @@ internal class MovieListAdapter :
                         ideally this should be configured and make use of a shared okHttp instance
                         https://coil-kt.github.io/coil/
                      */
-                    moviePoster.load(TMDB_IMAGE_BASE_URL + posterPath) { crossfade(true) }
-                    moviePoster.contentDescription = title
+                    moviePoster.apply {
+                        load(TMDB_IMAGE_BASE_URL + posterPath) {
+                            crossfade(true)
+                            // an easier on the eye placeholder could/should go here
+                            placeholder(R.drawable.ic_launcher_foreground)
+                        }
+                        contentDescription = title
+                        clipToOutline = true
+                    }
                     movieTitle.text = title
                     movieReleaseDate.text = releaseDate
-                    movieRatingPercentage.text = voteAverage.toString()
+//                    movieRatingPercentage.text = "$voteAverage%"
+                    movieRatingPercentage.text = resources.getString(R.string.voteAvergaePercentage, voteAverage)
                 }
             }
         }

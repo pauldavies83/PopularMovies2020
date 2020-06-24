@@ -22,15 +22,15 @@ class MovieListViewModelTest {
     private val movieTitle = "movieTitle"
     private val moviePosterPath = "/urlto.jpg"
     private val movieVoteAverage = 59
-    private val movieReleaseDateApi = "2019-11-01"
-    private val movieReleaseDateFormatted = "01-Nov-2019"
+    private val movieReleaseDate = LocalDate.parse("2019-11-01")
+    private val movieReleaseDateFormatted = movieReleaseDate.format(DATE_FORMAT_SHORT_MONTH_SPACE_SEPARATOR)
 
     private val movie = Movie(
         id = movieId,
         title = movieTitle,
         posterPath = moviePosterPath,
         voteAverage = movieVoteAverage,
-        releaseDate = LocalDate.parse(movieReleaseDateApi)
+        releaseDate = movieReleaseDate
     )
     private val expectedMovieListItem = MovieListItem(
         id = movieId,
