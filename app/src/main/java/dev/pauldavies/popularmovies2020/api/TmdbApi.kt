@@ -2,11 +2,12 @@ package dev.pauldavies.popularmovies2020.api
 
 import kotlinx.serialization.Serializable
 import retrofit2.http.GET
+import retrofit2.http.Query
 
 interface TmdbApi {
 
     @GET("popular")
-    suspend fun getPopularMovies(): ApiMovieResponse
+    suspend fun getPopularMovies(@Query("page") page: Int): ApiMovieResponse
 }
 
 @Serializable

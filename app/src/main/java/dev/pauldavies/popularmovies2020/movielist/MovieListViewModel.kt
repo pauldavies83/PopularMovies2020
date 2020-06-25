@@ -2,11 +2,9 @@ package dev.pauldavies.popularmovies2020.movielist
 
 import androidx.annotation.VisibleForTesting
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
+import androidx.paging.PagingData
 import dev.pauldavies.popularmovies2020.repository.Movie
-import kotlinx.coroutines.launch
 import dev.pauldavies.popularmovies2020.repository.MovieRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import java.time.format.DateTimeFormatter
@@ -21,16 +19,12 @@ internal class MovieListViewModel @ViewModelInject constructor(
     defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
-    val state: MutableLiveData<State> = MutableLiveData(State.Loading)
+    val state: LiveData<State>
 
     init {
-        viewModelScope.launch(defaultDispatcher) {
-            state.postValue(
-                State.Loaded(
-                    movieItems = movieRepository.popularMovies().map {
-                        it.toMovieListItem()
-                    }
-                )
+        state = movieRepository.popularMovies().map { pagingData ->
+            State.Loaded(
+                pagingData.map { it.toMovieListItem() }
             )
         }
     }
@@ -45,6 +39,6 @@ internal class MovieListViewModel @ViewModelInject constructor(
 
     sealed class State {
         object Loading: State()
-        data class Loaded(val movieItems: List<MovieListItem> = emptyList()): State()
+        data class Loaded(val movieItems: PagingData<MovieListItem>): State()
     }
 }
