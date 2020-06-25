@@ -30,7 +30,7 @@ class MovieRepositoryTest {
     )
 
     private val tmdbApi = mock<TmdbApi> {
-        onBlocking { it.getPopularMovies() } doReturn (successResponse)
+        onBlocking { it.getPopularMovies(1) } doReturn (successResponse)
     }
 
     private val repository by lazy { MovieRepository(tmdbApi) }
@@ -39,7 +39,7 @@ class MovieRepositoryTest {
     fun `successful Api Call`() = testCoroutineRule.runBlockingTest {
         val result = repository.popularMovies()
 
-        verify(tmdbApi).getPopularMovies()
+        verify(tmdbApi).getPopularMovies(1)
         assertEquals(
             listOf(
                 Movie(
@@ -61,12 +61,12 @@ class MovieRepositoryTest {
     @Test(expected = Exception::class)
     fun `error Api Call`() = testCoroutineRule.runBlockingTest {
         tmdbApi.stub {
-            onBlocking { it.getPopularMovies() } doAnswer { throw Exception() }
+            onBlocking { it.getPopularMovies(1) } doAnswer { throw Exception() }
         }
 
         repository.popularMovies()
 
-        verify(tmdbApi).getPopularMovies()
+        verify(tmdbApi).getPopularMovies(1)
     }
 
 }

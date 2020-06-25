@@ -5,10 +5,12 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import dev.pauldavies.popularmovies2020.R
 import kotlinx.android.synthetic.main.fragment_movie_list.*
+import kotlinx.coroutines.launch
 
 const val NUMBER_OF_GRID_COLUMNS = 2
 
@@ -35,7 +37,9 @@ class MovieListFragment : Fragment(R.layout.fragment_movie_list) {
                 is MovieListViewModel.State.Loaded -> {
                     movieListLoadingProgress.gone()
                     movieListRecyclerView.visible()
-                    movieListAdapter.submitList(state.movieItems)
+                    lifecycleScope.launch {
+                        movieListAdapter.submitData(state.movieItems)
+                    }
                 }
             }
         })

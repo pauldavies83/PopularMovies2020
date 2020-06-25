@@ -3,8 +3,8 @@ package dev.pauldavies.popularmovies2020.movielist
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.api.load
 import dev.pauldavies.popularmovies2020.R
@@ -18,7 +18,7 @@ val itemCallback = object : DiffUtil.ItemCallback<MovieListItem>() {
 const val TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500"
 
 internal class MovieListAdapter :
-    ListAdapter<MovieListItem, MovieListAdapter.MovieViewHolder>(itemCallback) {
+    PagingDataAdapter<MovieListItem, MovieListAdapter.MovieViewHolder>(itemCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
         return MovieViewHolder(
@@ -28,7 +28,7 @@ internal class MovieListAdapter :
     }
 
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
-        holder.bind(currentList[position])
+        getItem(position)?.let { holder.bind(it) }
     }
 
     class MovieViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
@@ -50,7 +50,6 @@ internal class MovieListAdapter :
                     }
                     movieTitle.text = title
                     movieReleaseDate.text = releaseDate
-//                    movieRatingPercentage.text = "$voteAverage%"
                     movieRatingPercentage.text = resources.getString(R.string.voteAvergaePercentage, voteAverage)
                 }
             }
