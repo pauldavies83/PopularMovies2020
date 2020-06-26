@@ -33,7 +33,10 @@ class MovieListFragment : Fragment(R.layout.fragment_movie_list) {
         movieListAdapter.addLoadStateListener { loadState ->
             movieListRecyclerView.isVisible = loadState.refresh is LoadState.NotLoading
             movieListLoadingProgress.isVisible = loadState.refresh is LoadState.Loading
+            movieListRetryButton.isVisible = loadState.refresh is LoadState.Error
         }
+
+        movieListRetryButton.setOnClickListener { movieListAdapter.retry() }
 
         viewModel.movieListItems.observe(viewLifecycleOwner, Observer { movieListItems ->
             lifecycleScope.launch {
