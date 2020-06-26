@@ -1,10 +1,12 @@
 package dev.pauldavies.popularmovies2020.repository
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.nhaarman.mockitokotlin2.*
 import dev.pauldavies.popularmovies2020.TestCoroutineRule
 import dev.pauldavies.popularmovies2020.api.ApiMovie
 import dev.pauldavies.popularmovies2020.api.ApiMovieResponse
 import dev.pauldavies.popularmovies2020.api.TmdbApi
+import dev.pauldavies.popularmovies2020.persistence.FavouriteMovieStorage
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -13,6 +15,8 @@ import kotlin.math.roundToInt
 
 class MovieRepositoryTest {
 
+    @get:Rule
+    val instantTaskExecutorRule = InstantTaskExecutorRule()
     @get:Rule
     val testCoroutineRule = TestCoroutineRule()
 
@@ -33,7 +37,9 @@ class MovieRepositoryTest {
         onBlocking { it.getPopularMovies(1) } doReturn (successResponse)
     }
 
-    private val repository by lazy { MovieRepository(tmdbApi) }
+    private val favouriteMovieStorage = mock<FavouriteMovieStorage>()
+
+    private val repository by lazy { MovieRepository(tmdbApi, favouriteMovieStorage) }
 
     @Test
     fun `successful Api Call`() = testCoroutineRule.runBlockingTest {
@@ -47,7 +53,8 @@ class MovieRepositoryTest {
                     title = title,
                     posterPath = posterPath,
                     voteAverage = (voteAverageDouble * 10).roundToInt(),
-                    releaseDate = releaseDateTime
+                    releaseDate = releaseDateTime,
+                    isFavourite = false
                 )
             ),
             result
@@ -69,4 +76,17 @@ class MovieRepositoryTest {
         verify(tmdbApi).getPopularMovies(1)
     }
 
+    @Test
+    fun `add favourite stored`() {
+        repository.setMovieAsFavourite(id)
+
+        verify(favouriteMovieStorage, times(1)).setMovieAsFavourite(id)
+    }
+
+    @Test
+    fun `remove favourite stored`() {
+        repository.removeMovieAsFavourite(id)
+
+        verify(favouriteMovieStorage, times(1)).removeMovieAsFavourite(id)
+    }
 }

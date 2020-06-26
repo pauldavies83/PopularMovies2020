@@ -26,15 +26,26 @@ internal class MovieListViewModel @ViewModelInject constructor(
         pagingSourceFactory = { MoviesDataSource(movieRepository) }
     ).liveData.map { movies ->
         movies.map {
-            it.toMovieListItem()
+            it.toMovieListItem(onClick = ::onFavouriteClicked)
+        }
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    internal fun onFavouriteClicked(movieId: String, addAsFavourite: Boolean) {
+        if (addAsFavourite) {
+            movieRepository.setMovieAsFavourite(movieId)
+        } else {
+            movieRepository.removeMovieAsFavourite(movieId)
         }
     }
 }
 
-internal fun Movie.toMovieListItem() = MovieListItem(
+internal fun Movie.toMovieListItem(onClick: (String, Boolean) -> Unit) = MovieListItem(
     id = id,
     title = title,
     posterPath = posterPath,
     voteAverage = voteAverage,
-    releaseDate = releaseDate.format(DATE_FORMAT_SHORT_MONTH_SPACE_SEPARATOR)
+    releaseDate = releaseDate.format(DATE_FORMAT_SHORT_MONTH_SPACE_SEPARATOR),
+    isFavourite = isFavourite,
+    onClickFavourite = onClick
 )

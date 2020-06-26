@@ -1,8 +1,12 @@
 package dev.pauldavies.popularmovies2020.movielist
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.times
+import com.nhaarman.mockitokotlin2.verify
 import dev.pauldavies.popularmovies2020.TestCoroutineRule
 import dev.pauldavies.popularmovies2020.repository.Movie
+import dev.pauldavies.popularmovies2020.repository.MovieRepository
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -14,6 +18,8 @@ class MovieListViewModelTest {
     val instantTaskExecutorRule = InstantTaskExecutorRule()
     @get:Rule
     val testCoroutineRule = TestCoroutineRule()
+
+    private val noOpClickListener = { _: String, _:Boolean -> Unit }
 
     private val movieId = "movieId"
     private val movieTitle = "movieTitle"
@@ -28,18 +34,39 @@ class MovieListViewModelTest {
         title = movieTitle,
         posterPath = moviePosterPath,
         voteAverage = movieVoteAverage,
-        releaseDate = movieReleaseDate
+        releaseDate = movieReleaseDate,
+        isFavourite = false
     )
     private val expectedMovieListItem = MovieListItem(
         id = movieId,
         title = movieTitle,
         posterPath = moviePosterPath,
         voteAverage = movieVoteAverage,
-        releaseDate = movieReleaseDateFormatted
+        releaseDate = movieReleaseDateFormatted,
+        isFavourite = false,
+        onClickFavourite = noOpClickListener
     )
+
+    private val movieRepository = mock<MovieRepository>()
+
+    private val viewModel by lazy { MovieListViewModel(movieRepository) }
 
     @Test
     fun `loaded movies bound into emitted state`() {
-        assertEquals(expectedMovieListItem, movie.toMovieListItem())
+        assertEquals(expectedMovieListItem, movie.toMovieListItem(noOpClickListener) )
+    }
+
+    @Test
+    fun `when movie added as favourite, on favourite clicked, sent to repository`() {
+        viewModel.onFavouriteClicked(movieId, true)
+
+        verify(movieRepository, times(1)).setMovieAsFavourite(movieId)
+    }
+
+    @Test
+    fun `when movie removed as favourite, on favourite clicked, sent to repository`() {
+        viewModel.onFavouriteClicked(movieId, false)
+
+        verify(movieRepository, times(1)).removeMovieAsFavourite(movieId)
     }
 }

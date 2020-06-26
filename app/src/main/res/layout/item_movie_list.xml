@@ -16,6 +16,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <CheckBox
+        android:id="@+id/movieFavouriteButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:button="@drawable/favourite_button_drawable_selector"
+        android:padding="4dp"
+        app:layout_constraintStart_toStartOf="@id/moviePoster"
+        app:layout_constraintTop_toTopOf="@id/moviePoster"/>
+
     <TextView
         android:id="@+id/movieRatingPercentage"
         android:layout_width="wrap_content"

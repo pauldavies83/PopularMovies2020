@@ -51,6 +51,10 @@ internal class MovieListAdapter :
                     movieTitle.text = title
                     movieReleaseDate.text = releaseDate
                     movieRatingPercentage.text = resources.getString(R.string.voteAvergaePercentage, voteAverage)
+                    movieFavouriteButton.isChecked = isFavourite
+                    movieFavouriteButton.setOnCheckedChangeListener { _, nowChecked ->
+                        onClickFavourite(movie.id, nowChecked)
+                    }
                 }
             }
         }
@@ -63,5 +67,7 @@ data class MovieListItem(
     val title: String,
     val posterPath: String,
     val voteAverage: Int,
-    val releaseDate: String
+    val releaseDate: String,
+    val isFavourite: Boolean,
+    val onClickFavourite: (String, Boolean) -> Unit
 )
