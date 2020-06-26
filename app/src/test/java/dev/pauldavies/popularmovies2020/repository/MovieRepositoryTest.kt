@@ -37,7 +37,7 @@ class MovieRepositoryTest {
 
     @Test
     fun `successful Api Call`() = testCoroutineRule.runBlockingTest {
-        val result = repository.popularMovies()
+        val result = repository.popularMoviesPage(1)
 
         verify(tmdbApi).getPopularMovies(1)
         assertEquals(
@@ -64,7 +64,7 @@ class MovieRepositoryTest {
             onBlocking { it.getPopularMovies(1) } doAnswer { throw Exception() }
         }
 
-        repository.popularMovies()
+        repository.popularMoviesPage(1)
 
         verify(tmdbApi).getPopularMovies(1)
     }
