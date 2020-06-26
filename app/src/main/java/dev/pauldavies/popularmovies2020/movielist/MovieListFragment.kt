@@ -2,10 +2,12 @@ package dev.pauldavies.popularmovies2020.movielist
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.GridLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import dev.pauldavies.popularmovies2020.R
@@ -28,32 +30,15 @@ class MovieListFragment : Fragment(R.layout.fragment_movie_list) {
             layoutManager = GridLayoutManager(context, NUMBER_OF_GRID_COLUMNS)
         }
 
-        viewModel.state.observe(viewLifecycleOwner, Observer { state ->
-            when (state) {
-                is MovieListViewModel.State.Loading -> {
-                    movieListLoadingProgress.visible()
-                    movieListRecyclerView.gone()
-                }
-                is MovieListViewModel.State.Loaded -> {
-                    movieListLoadingProgress.gone()
-                    movieListRecyclerView.visible()
-                    lifecycleScope.launch {
-                        movieListAdapter.submitData(state.movieItems)
-                    }
-                }
+        movieListAdapter.addLoadStateListener { loadState ->
+            movieListRecyclerView.isVisible = loadState.refresh is LoadState.NotLoading
+            movieListLoadingProgress.isVisible = loadState.refresh is LoadState.Loading
+        }
+
+        viewModel.movieListItems.observe(viewLifecycleOwner, Observer { movieListItems ->
+            lifecycleScope.launch {
+                movieListAdapter.submitData(movieListItems)
             }
         })
     }
-}
-
-fun View.visible() {
-    this.visibility = View.VISIBLE
-}
-
-fun View.invisible() {
-    this.visibility = View.INVISIBLE
-}
-
-fun View.gone() {
-    this.visibility = View.GONE
 }

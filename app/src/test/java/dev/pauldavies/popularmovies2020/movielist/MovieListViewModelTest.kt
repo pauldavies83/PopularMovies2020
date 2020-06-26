@@ -1,20 +1,9 @@
 package dev.pauldavies.popularmovies2020.movielist
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.paging.PagingData
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
 import dev.pauldavies.popularmovies2020.TestCoroutineRule
-import dev.pauldavies.popularmovies2020.api.ApiMovie
-import dev.pauldavies.popularmovies2020.api.ApiMovieResponse
-import dev.pauldavies.popularmovies2020.api.TmdbApi
 import dev.pauldavies.popularmovies2020.repository.Movie
-import dev.pauldavies.popularmovies2020.repository.MovieRepository
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import java.time.LocalDate
@@ -48,39 +37,9 @@ class MovieListViewModelTest {
         voteAverage = movieVoteAverage,
         releaseDate = movieReleaseDateFormatted
     )
-    private val movieLiveData = MutableLiveData<PagingData<Movie>>()
-
-    private val tmdbApi: TmdbApi = mock {
-        onBlocking { getPopularMovies(any()) } doReturn (ApiMovieResponse(
-            listOf(
-                ApiMovie(movieId, movieTitle, moviePosterPath, 5.7, "2019-01-11")
-            )
-        ))
-    }
-
-    private val movieRepository = MovieRepository(tmdbApi)
-//        onBlocking { it.popularMovies() } doReturn(movieLiveData)
-//    }
-
-    private val viewModel by lazy {
-        MovieListViewModel(movieRepository, testCoroutineRule.testDispatcher)
-    }
-
-//    @Test
-//    fun `loading state shown initially`() = testCoroutineRule.runBlockingTest {
-//        testCoroutineRule.pauseDispatcher()
-//        viewModel.apply {
-//            assertTrue(state.requireValue() is MovieListViewModel.State.Loading)
-//        }
-//    }
 
     @Test
-    fun `loaded movies bound into emitted state`() = testCoroutineRule.runBlockingTest {
-            viewModel.apply {
-                val loaded = state.requireValue() as MovieListViewModel.State.Loaded
-                assertEquals(expectedMovieListItem, loaded.movieItems)
-            }
+    fun `loaded movies bound into emitted state`() {
+        assertEquals(expectedMovieListItem, movie.toMovieListItem())
     }
 }
-
-fun <T : Any> LiveData<T>.requireValue(): T = value!!
